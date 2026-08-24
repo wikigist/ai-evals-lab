@@ -1,0 +1,6 @@
+.venv/
+.env
+__pycache__/
+.pytest_cache/
+interaction_records.json
+.DS_Store
