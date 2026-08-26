@@ -9,3 +9,7 @@ A Python project for building and testing LLM evaluation and reliability workflo
 - Interaction record creation
 - JSON persistence across sessions
 - Automated tests with pytest
+
+## Project Status
+
+Early development.
