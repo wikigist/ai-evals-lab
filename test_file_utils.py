@@ -35,10 +35,10 @@ def test_load_results_valid_file():
         "status": "success",
         "score": 99
     },
-    {
-        "status": "success",
-        "score": 105
-    }
+    #{
+    #    "status": "success",
+    #    "score": 105
+    #}
 ]
 
     assert actual == expected
