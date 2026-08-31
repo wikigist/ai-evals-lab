@@ -27,3 +27,25 @@ def create_evaluation_record(
     }
 
     return evaluation_record
+
+
+def run_evaluation(actual_answer, expected_answer, evaluator):
+    if evaluator == "contains":
+
+        status = evaluate_contains(actual_answer, expected_answer)
+
+    elif evaluator == "exact_match":
+
+        status = evaluate_answer(actual_answer, expected_answer)
+
+    else:
+        raise ValueError("Unsupported evaluator")
+
+    record = create_evaluation_record(
+     actual_answer,
+     expected_answer,
+     evaluator,
+     status
+    )
+
+    return record

@@ -1,4 +1,5 @@
 import evaluators 
+import pytest
 
 def test_evaluate_answer():
 
@@ -79,3 +80,47 @@ def test_create_evaluation_record_for_failed_exact_match():
     }
 
     assert actual == expected
+
+
+def test_run_evaluation_with_contains():
+    actual = evaluators.run_evaluation(
+    "The capital of France is Paris.",
+    "Paris",
+    "contains"
+    )
+
+    expected = {
+        "actual": "The capital of France is Paris.",
+        "expected": "Paris",
+        "evaluator": "contains",
+        "status": "pass"
+    }
+
+    assert actual == expected
+
+
+def test_run_evaluation_with_exact_match():
+    actual = evaluators.run_evaluation(
+        "PARIS",
+        "paris",
+        "exact_match"
+    )
+
+    expected = {
+        "actual": "PARIS",
+        "expected": "paris",
+        "evaluator": "exact_match",
+        "status": "pass"
+    }
+
+    assert actual == expected 
+
+
+
+def test_run_evaluation_rejects_unsupported_evaluator():
+    with pytest.raises(ValueError):
+        evaluators.run_evaluation(
+        "Paris",
+        "Paris",
+        "banana"
+    )
