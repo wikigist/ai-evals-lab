@@ -1,5 +1,6 @@
 import evaluators 
 import pytest
+import metrics
 
 def test_evaluate_answer():
 
@@ -124,3 +125,45 @@ def test_run_evaluation_rejects_unsupported_evaluator():
         "Paris",
         "banana"
     )
+
+
+def test_run_evaluation_batch():
+    cases = [
+    {
+        "actual": "Paris",
+        "expected": "Paris",
+        "evaluator": "exact_match"
+    },
+    {
+        "actual": "The capital of France is London.",
+        "expected": "Paris",
+        "evaluator": "contains"
+    }
+]
+
+    actual = evaluators.run_evaluation_batch(cases)
+    pass_rate = metrics.calculate_pass_rate(actual)
+    expected = [
+    {
+        "actual": "Paris",
+        "expected": "Paris",
+        "evaluator": "exact_match",
+        "status": "pass"
+    },
+    {
+        "actual": "The capital of France is London.",
+        "expected": "Paris",
+        "evaluator": "contains",
+        "status": "fail"
+    }
+]
+    assert actual == expected
+    assert pass_rate == 0.5
+
+
+
+
+
+
+
+

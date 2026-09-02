@@ -49,3 +49,18 @@ def run_evaluation(actual_answer, expected_answer, evaluator):
     )
 
     return record
+
+
+def run_evaluation_batch(cases):
+    results = []
+
+    for case in cases:
+        result = run_evaluation(
+            case["actual"],
+            case["expected"],
+            case["evaluator"]
+        )
+
+        results.append(result)
+
+    return results
