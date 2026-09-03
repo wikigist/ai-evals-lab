@@ -163,6 +163,44 @@ def test_run_evaluation_batch():
 
 
 
+def test_run_evaluation_suite():
+        cases = [
+    {
+        "actual": "Paris",
+        "expected": "Paris",
+        "evaluator": "exact_match"
+    },
+    {
+        "actual": "The capital of France is London.",
+        "expected": "Paris",
+        "evaluator": "contains"
+    }
+]
+
+        actual = evaluators.run_evaluation_suite(cases)
+        expected = {
+    "results": [
+        {
+            "actual": "Paris",
+            "expected": "Paris",
+            "evaluator": "exact_match",
+            "status": "pass"
+        },
+        {
+            "actual": "The capital of France is London.",
+            "expected": "Paris",
+            "evaluator": "contains",
+            "status": "fail"
+        }
+    ],
+    "pass_rate": 0.5
+}
+        assert actual == expected
+
+
+
+
+
 
 
 

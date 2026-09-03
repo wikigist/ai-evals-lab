@@ -1,3 +1,5 @@
+import metrics
+
 def evaluate_answer(actual_answer, expected_answer):
 
     if actual_answer.lower() == expected_answer.lower():
@@ -64,3 +66,14 @@ def run_evaluation_batch(cases):
         results.append(result)
 
     return results
+
+
+def run_evaluation_suite(cases):
+    results = run_evaluation_batch(cases)
+    pass_rate = metrics.calculate_pass_rate(results)
+    run_result = {
+        "results": results,
+        "pass_rate": pass_rate
+    }
+
+    return run_result
