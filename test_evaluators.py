@@ -199,8 +199,99 @@ def test_run_evaluation_suite():
 
 
 
+def test_run_evaluation_suite_empty():
+    cases = []
+
+    actual = evaluators.run_evaluation_suite(cases)
+    expected = {
+    "results": [],
+    "pass_rate": 0
+}
+
+    assert actual == expected
 
 
+
+def test_run_evaluation_suite_one_case():
+    cases = [
+        {
+    "actual": "Paris",
+    "expected": "Paris",
+    "evaluator": "exact_match"
+    }
+    ]
+
+    actual = evaluators.run_evaluation_suite(cases)
+    expected = {
+    "results": [
+        {
+            "actual": "Paris",
+            "expected": "Paris",
+            "evaluator": "exact_match",
+            "status": "pass"
+        }
+    ],
+    "pass_rate": 1.0
+    }
+
+    assert actual == expected
+
+
+def test_run_evaluation_suite_all_fail():
+    cases = [
+        {"actual": "London", 
+         "expected": "Paris", 
+         "evaluator": "exact_match"
+         },
+        {"actual": "The capital of France is London", 
+         "expected": "Paris",
+         "evaluator": "contains"
+         },
+        {"actual": "The capital of Nigeria is Paris", 
+         "expected": "Abuja", 
+         "evaluator": "contains"
+         }
+         ]
+
+    actual = evaluators.run_evaluation_suite(cases)
+    expected = {
+            "results": [
+            {
+            "actual": "London",
+            "expected": "Paris",
+            "evaluator": "exact_match",
+            "status": "fail"
+            },
+            {
+            "actual": "The capital of France is London",
+            "expected": "Paris",
+            "evaluator": "contains",
+            "status": "fail"
+            },
+            {
+            "actual": "The capital of Nigeria is Paris",
+            "expected": "Abuja",
+            "evaluator": "contains",
+            "status": "fail"
+            }
+            ],
+
+            "pass_rate": 0.0
+
+            }
+    assert actual == expected 
+
+
+def test_run_evaluation_suite_rejects_unsupported_evaluator():
+    cases = [
+        {
+            "actual": "Paris",
+            "expected": "Paris",
+            "evaluator": "banana"
+            }
+            ]
+    with pytest.raises(ValueError):
+        evaluators.run_evaluation_suite(cases)
 
 
 
