@@ -27,3 +27,11 @@ def add_result(result, filename):
     save_results(results, filename)
 
     return results
+
+
+
+def load_required_results(filename):
+    with open(filename, "r") as file:
+        results = json.load(file)
+
+    return results
