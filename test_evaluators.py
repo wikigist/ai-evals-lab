@@ -295,4 +295,58 @@ def test_run_evaluation_suite_rejects_unsupported_evaluator():
 
 
 
+def test_validate_evaluation_case_valid():
+    case = {
+        "actual": "Paris",
+        "expected": "Paris",
+        "evaluator": "exact_match"
+    }
+
+    actual = evaluators.validate_evaluation_case(case)
+
+    assert actual is None
+
+
+def test_validate_evaluation_case_missing_expected():
+    case = {
+        "actual": "Paris",
+        "evaluator": "exact_match"
+    }
+
+    with pytest.raises(
+        ValueError,
+        match="Missing required field: expected"
+    ):
+        evaluators.validate_evaluation_case(case)
+        
+
+    
+
+def test_validate_evaluation_case_missing_evaluator():
+    case = {
+        "actual": "Paris",
+        "expected": "Paris"
+    }
+
+    with pytest.raises(
+        ValueError,
+        match="Missing required field: evaluator"
+    ):
+        evaluators.validate_evaluation_case(case)
+
+
+def test_validate_evaluation_case_missing_actual():
+    case = {
+        
+        "expected": "Paris",
+        "evaluator": "contains"
+    }
+
+    with pytest.raises(
+        ValueError,
+        match="Missing required field: actual"
+    ):
+        evaluators.validate_evaluation_case(case)
+
+
 
