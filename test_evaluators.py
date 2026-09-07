@@ -350,3 +350,29 @@ def test_validate_evaluation_case_missing_actual():
 
 
 
+def test_validate_evaluation_case_non_dict():
+    case = ["Paris", "Paris", "exact_match"]
+
+    with pytest.raises(
+            TypeError,
+            match="Evaluation case must be a dictionary"
+        ):
+            evaluators.validate_evaluation_case(case)
+
+
+
+def test_validate_evaluation_case_non_string():
+    case = {"actual": 123, "expected": "Paris", "evaluator": "exact_match"}
+
+
+    with pytest.raises(
+            TypeError,
+            match="Actual must be a string"
+        ):
+            evaluators.validate_evaluation_case(case)
+
+
+
+
+
+

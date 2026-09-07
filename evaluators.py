@@ -83,15 +83,22 @@ def run_evaluation_suite(cases):
 
 
 def validate_evaluation_case(case):
+    if not isinstance(case, dict):
+        raise TypeError("Evaluation case must be a dictionary")
+    
     required_keys = [
         "actual",
         "expected",
         "evaluator"
     ]
 
+
     for key in required_keys:
         if key not in case:
             raise ValueError(f"Missing required field: {key}")
+
+    if not isinstance(case["actual"], str):
+                raise TypeError("Actual must be a string")
 
 
 
