@@ -98,7 +98,35 @@ def validate_evaluation_case(case):
             raise ValueError(f"Missing required field: {key}")
 
     if not isinstance(case["actual"], str):
-                raise TypeError("Actual must be a string")
+        raise TypeError("Actual must be a string")
+    if not isinstance(case["expected"], str):
+        raise TypeError("Expected must be a string")
+    if not isinstance(case["evaluator"], str):
+        raise TypeError("Evaluator must be a string")
+
+    supported_evaluators = [
+    "contains",
+    "exact_match"
+    ]
+
+    if case["evaluator"] not in supported_evaluators:
+        raise ValueError("Unsupported evaluator")
+
+
+
+
+def validate_evaluation_dataset(dataset):
+    if not isinstance(dataset, list):
+        raise TypeError("Evaluation dataset must be a list")
+
+
+    for case in dataset:
+        validate_evaluation_case(case)
+
+
+ 
+        
+
 
 
 

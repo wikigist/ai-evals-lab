@@ -372,6 +372,111 @@ def test_validate_evaluation_case_non_string():
             evaluators.validate_evaluation_case(case)
 
 
+def test_validate_evaluation_case_non_string_expected():
+    case = {
+    "actual": "Paris",
+    "expected": 123,
+    "evaluator": "exact_match"
+    }
+
+    with pytest.raises(
+        TypeError,
+        match="Expected must be a string"
+    ):
+        evaluators.validate_evaluation_case(case)
+
+
+
+def test_validate_evaluation_case_non_string_evaluator():
+    case = {
+    "actual": "Paris",
+    "expected": "Paris",
+    "evaluator": 123
+    }
+
+    with pytest.raises(
+        TypeError,
+        match="Evaluator must be a string"
+    ):
+        evaluators.validate_evaluation_case(case)
+
+
+
+def test_validate_evaluation_unsuppported_case():
+
+    case = {
+    "actual": "Paris",
+    "expected": "Paris",
+    "evaluator": "banana"
+    }
+
+    with pytest.raises(
+        ValueError,
+        match="Unsupported evaluator"
+    ):
+        evaluators.validate_evaluation_case(case)
+
+
+def test_validate_evaluation_dataset():
+
+    dataset = {
+    "actual": "Paris",
+    "expected": "Paris",
+    "evaluator": "exact_match"
+    }
+
+    with pytest.raises(
+        TypeError,
+        match="Evaluation dataset must be a list"
+    ):
+        evaluators.validate_evaluation_dataset(dataset)
+
+
+
+def test_validate_evaluation_dataset_valid():
+
+   dataset = [
+        {
+            "actual": "Paris",
+            "expected": "Paris",
+            "evaluator": "exact_match"
+            },
+            {
+                "actual": "London",
+                "expected": "London",
+                "evaluator": "contains"
+                }
+                ]
+
+   actual = evaluators.validate_evaluation_dataset(dataset)
+
+   assert actual is None
+
+
+
+def test_validate_evaluation_dataset_is_bad():
+    dataset = [
+        {
+            "actual": "Paris",
+            "expected": "Paris",
+            "evaluator": "exact_match"
+            },
+            "banana"
+            ]
+
+    with pytest.raises(
+        TypeError,
+        match="Evaluation case must be a dictionary"
+        ):
+
+            evaluators.validate_evaluation_dataset(dataset)
+    
+
+    
+    
+    
+
+
 
 
 
