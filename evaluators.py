@@ -56,10 +56,13 @@ def run_evaluation(actual_answer, expected_answer, evaluator):
 
 
 def run_evaluation_batch(cases):
+    validate_evaluation_dataset(cases)
+    
     results = []
 
     for case in cases:
-        validate_evaluation_case(case)
+        
+
         result = run_evaluation(
             case["actual"],
             case["expected"],

@@ -470,6 +470,24 @@ def test_validate_evaluation_dataset_is_bad():
         ):
 
             evaluators.validate_evaluation_dataset(dataset)
+
+
+
+def test_run_evaluation_batch_rejects_non_list_dataset():
+
+    cases = {
+        "actual": "Paris",
+        "expected": "Paris",
+        "evaluator": "exact_match"
+        }
+
+    with pytest.raises(
+        TypeError,
+        match="Evaluation dataset must be a list"
+        ):
+
+            evaluators.run_evaluation_batch(cases)
+
     
 
     
