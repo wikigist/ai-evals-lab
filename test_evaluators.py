@@ -156,6 +156,7 @@ def test_run_evaluation_batch():
         "evaluator": "contains",
         "status": "fail"
     }
+    
 ]
     assert actual == expected
     assert pass_rate == 0.5
@@ -193,7 +194,8 @@ def test_run_evaluation_suite():
             "status": "fail"
         }
     ],
-    "pass_rate": 0.5
+    "pass_rate": 0.5,
+    "case_count": 2
 }
         assert actual == expected
 
@@ -205,7 +207,8 @@ def test_run_evaluation_suite_empty():
     actual = evaluators.run_evaluation_suite(cases)
     expected = {
     "results": [],
-    "pass_rate": 0
+    "pass_rate": 0,
+    "case_count": 0
 }
 
     assert actual == expected
@@ -231,7 +234,8 @@ def test_run_evaluation_suite_one_case():
             "status": "pass"
         }
     ],
-    "pass_rate": 1.0
+    "pass_rate": 1.0,
+    "case_count": 1
     }
 
     assert actual == expected
@@ -276,7 +280,8 @@ def test_run_evaluation_suite_all_fail():
             }
             ],
 
-            "pass_rate": 0.0
+            "pass_rate": 0.0,
+            "case_count": 3
 
             }
     assert actual == expected 
@@ -487,6 +492,36 @@ def test_run_evaluation_batch_rejects_non_list_dataset():
         ):
 
             evaluators.run_evaluation_batch(cases)
+
+
+
+def test_run_evaluation_suite_case_count():
+
+        cases = [
+        {"actual": "London", 
+         "expected": "Paris", 
+         "evaluator": "exact_match"
+         },
+        {"actual": "The capital of France is London", 
+         "expected": "Paris",
+         "evaluator": "contains"
+         },
+        {"actual": "The capital of Nigeria is Paris", 
+         "expected": "Abuja", 
+         "evaluator": "contains"
+         }
+         ]
+
+        run_result = evaluators.run_evaluation_suite(cases)
+        assert run_result["case_count"] == 3
+
+
+def test_run_evaluation_suite_case_count_empty():
+
+     cases = []
+
+     run_result = evaluators.run_evaluation_suite(cases)
+     assert run_result["case_count"] == 0
 
     
 

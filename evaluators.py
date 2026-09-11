@@ -79,7 +79,8 @@ def run_evaluation_suite(cases):
     pass_rate = metrics.calculate_pass_rate(results)
     run_result = {
         "results": results,
-        "pass_rate": pass_rate
+        "pass_rate": pass_rate,
+        "case_count": len(results)
     }
 
     return run_result

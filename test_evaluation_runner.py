@@ -21,7 +21,8 @@ def test_run_evaluation_file_with_project_dataset():
             "status": "fail"
         }
     ],
-    "pass_rate": 0.5
+    "pass_rate": 0.5,
+    "case_count": 2
     }
 
     assert actual == expected
@@ -59,7 +60,8 @@ def test_run_evaluation_file_with_tmp_path(tmp_path):
             "status": "fail"
         }
     ],
-    "pass_rate": 0.5
+    "pass_rate": 0.5,
+    "case_count": 2
     }
 
     assert actual == expected
@@ -76,7 +78,8 @@ def test_run_evaluation_file_with_empty_list(tmp_path):
     actual = evaluation_runner.run_evaluation_file(test_file)
     expected = {
         "results": [],
-        "pass_rate": 0
+        "pass_rate": 0,
+        "case_count": 0
     }
 
     assert actual == expected 
