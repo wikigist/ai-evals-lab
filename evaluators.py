@@ -74,13 +74,16 @@ def run_evaluation_batch(cases):
     return results
 
 
-def run_evaluation_suite(cases):
+def run_evaluation_suite(cases, model, prompt_version, dataset_name):
     results = run_evaluation_batch(cases)
     pass_rate = metrics.calculate_pass_rate(results)
     run_result = {
         "results": results,
         "pass_rate": pass_rate,
-        "case_count": len(results)
+        "case_count": len(results),
+        "model": model,
+        "prompt_version": prompt_version,
+        "dataset_name": dataset_name
     }
 
     return run_result

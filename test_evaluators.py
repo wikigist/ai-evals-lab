@@ -178,7 +178,7 @@ def test_run_evaluation_suite():
     }
 ]
 
-        actual = evaluators.run_evaluation_suite(cases)
+        actual = evaluators.run_evaluation_suite(cases, "model_a", "v1", "support_eval")
         expected = {
     "results": [
         {
@@ -195,7 +195,10 @@ def test_run_evaluation_suite():
         }
     ],
     "pass_rate": 0.5,
-    "case_count": 2
+    "case_count": 2,
+    "model": "model_a",
+    "prompt_version": "v1",
+    "dataset_name": "support_eval"
 }
         assert actual == expected
 
@@ -204,11 +207,14 @@ def test_run_evaluation_suite():
 def test_run_evaluation_suite_empty():
     cases = []
 
-    actual = evaluators.run_evaluation_suite(cases)
+    actual = evaluators.run_evaluation_suite(cases, "model_a", "v1", "support_eval")
     expected = {
     "results": [],
     "pass_rate": 0,
-    "case_count": 0
+    "case_count": 0,
+    "model": "model_a",
+    "prompt_version": "v1",
+    "dataset_name": "support_eval"
 }
 
     assert actual == expected
@@ -224,7 +230,7 @@ def test_run_evaluation_suite_one_case():
     }
     ]
 
-    actual = evaluators.run_evaluation_suite(cases)
+    actual = evaluators.run_evaluation_suite(cases, "model_a", "v1", "support_eval")
     expected = {
     "results": [
         {
@@ -235,7 +241,10 @@ def test_run_evaluation_suite_one_case():
         }
     ],
     "pass_rate": 1.0,
-    "case_count": 1
+    "case_count": 1,
+    "model": "model_a",
+    "prompt_version": "v1",
+    "dataset_name": "support_eval"
     }
 
     assert actual == expected
@@ -257,7 +266,7 @@ def test_run_evaluation_suite_all_fail():
          }
          ]
 
-    actual = evaluators.run_evaluation_suite(cases)
+    actual = evaluators.run_evaluation_suite(cases, "model_a", "v1", "support_eval")
     expected = {
             "results": [
             {
@@ -281,7 +290,10 @@ def test_run_evaluation_suite_all_fail():
             ],
 
             "pass_rate": 0.0,
-            "case_count": 3
+            "case_count": 3,
+            "model": "model_a",
+            "prompt_version": "v1",
+            "dataset_name": "support_eval"
 
             }
     assert actual == expected 
@@ -296,7 +308,7 @@ def test_run_evaluation_suite_rejects_unsupported_evaluator():
             }
             ]
     with pytest.raises(ValueError):
-        evaluators.run_evaluation_suite(cases)
+        evaluators.run_evaluation_suite(cases, "model_a", "v1", "support_eval")
 
 
 
@@ -512,7 +524,7 @@ def test_run_evaluation_suite_case_count():
          }
          ]
 
-        run_result = evaluators.run_evaluation_suite(cases)
+        run_result = evaluators.run_evaluation_suite(cases, "model_a", "v1", "support_eval")
         assert run_result["case_count"] == 3
 
 
@@ -520,8 +532,43 @@ def test_run_evaluation_suite_case_count_empty():
 
      cases = []
 
-     run_result = evaluators.run_evaluation_suite(cases)
+     run_result = evaluators.run_evaluation_suite(cases, "model_a", "v1", "support_eval")
      assert run_result["case_count"] == 0
+
+
+
+def test_run_evaluation_suite_model_metadata():
+
+     cases = []
+
+     run_result = evaluators.run_evaluation_suite(cases, "model_a", "v1", "support_eval")
+
+     assert run_result["model"] == "model_a"
+
+
+
+def test_run_evaluation_suite_prompt_version_metadata():
+
+     cases = []
+
+     run_result = evaluators.run_evaluation_suite(cases, "model_a", "v1", "support_eval")
+
+     assert run_result["prompt_version"] == "v1"
+
+
+
+def test_run_evaluation_suite_dataset_name_metadata():
+    cases = []
+
+    run_result = evaluators.run_evaluation_suite(
+        cases,
+        "model_a",
+        "v1",
+        "support_eval"
+    )
+
+    assert run_result["dataset_name"] == "support_eval"
+
 
     
 

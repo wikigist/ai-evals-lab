@@ -5,7 +5,7 @@ import json
 import evaluators
 
 def test_run_evaluation_file_with_project_dataset():
-    actual = evaluation_runner.run_evaluation_file("evaluation_cases.json")
+    actual = evaluation_runner.run_evaluation_file("evaluation_cases.json", "model_a", "v1", "support_eval")
     expected = {
     "results": [
         {
@@ -22,7 +22,10 @@ def test_run_evaluation_file_with_project_dataset():
         }
     ],
     "pass_rate": 0.5,
-    "case_count": 2
+    "case_count": 2,
+    "model": "model_a",
+    "prompt_version": "v1",
+    "dataset_name": "support_eval"
     }
 
     assert actual == expected
@@ -44,7 +47,7 @@ def test_run_evaluation_file_with_tmp_path(tmp_path):
     ]
     file_utils.save_results(test_cases, test_file)
 
-    actual = evaluation_runner.run_evaluation_file(test_file)
+    actual = evaluation_runner.run_evaluation_file(test_file, "model_a", "v1", "support_eval")
     expected = {
     "results": [
         {
@@ -61,7 +64,10 @@ def test_run_evaluation_file_with_tmp_path(tmp_path):
         }
     ],
     "pass_rate": 0.5,
-    "case_count": 2
+    "case_count": 2,
+    "model": "model_a",
+    "prompt_version": "v1",
+    "dataset_name": "support_eval"
     }
 
     assert actual == expected
@@ -75,11 +81,14 @@ def test_run_evaluation_file_with_empty_list(tmp_path):
 
     file_utils.save_results(test_cases, test_file)
 
-    actual = evaluation_runner.run_evaluation_file(test_file)
+    actual = evaluation_runner.run_evaluation_file(test_file, "model_a", "v1", "support_eval")
     expected = {
         "results": [],
         "pass_rate": 0,
-        "case_count": 0
+        "case_count": 0,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "support_eval"
     }
 
     assert actual == expected 
@@ -90,7 +99,7 @@ def test_run_evaluation_file_missing_file(tmp_path):
     test_file = tmp_path / "missing.json"
 
     with pytest.raises(FileNotFoundError):
-        evaluation_runner.run_evaluation_file(test_file)
+        evaluation_runner.run_evaluation_file(test_file, "model_a", "v1", "support_eval")
 
 
 
@@ -99,7 +108,7 @@ def test_run_evaluation_file_broken_file(tmp_path):
     test_file = tmp_path / "broken.json"
     test_file.write_text('{"actual": "Paris"')
     with pytest.raises(json.JSONDecodeError):
-        evaluation_runner.run_evaluation_file(test_file)
+        evaluation_runner.run_evaluation_file(test_file, "model_a", "v1", "support_eval")
 
 
 
@@ -114,7 +123,7 @@ def test_run_evaluation_file_missing_expected(tmp_path):
 
     file_utils.save_results(test_cases, test_file)
     with pytest.raises(ValueError, match="Missing required field: expected"):
-        evaluation_runner.run_evaluation_file(test_file)
+        evaluation_runner.run_evaluation_file(test_file, "model_a", "v1", "support_eval")
 
 
 def test_run_evaluation_file_missing_evaluator(tmp_path):
@@ -128,7 +137,7 @@ def test_run_evaluation_file_missing_evaluator(tmp_path):
 
     file_utils.save_results(test_cases, test_file)
     with pytest.raises(ValueError, match="Missing required field: evaluator"):
-        evaluation_runner.run_evaluation_file(test_file)
+        evaluation_runner.run_evaluation_file(test_file, "model_a", "v1", "support_eval")
 
 
 
@@ -142,7 +151,7 @@ def test_run_evaluation_file_bad_dataset(tmp_path):
 
     file_utils.save_results(bad_dataset, test_file)
     with pytest.raises(TypeError, match="Evaluation dataset must be a list"):
-        evaluation_runner.run_evaluation_file(test_file)
+        evaluation_runner.run_evaluation_file(test_file, "model_a", "v1", "support_eval")
 
 
 
@@ -158,7 +167,7 @@ def test_run_evaluation_file_unsupported_dataset(tmp_path):
             ]
     file_utils.save_results(bad_dataset, test_file)
     with pytest.raises(TypeError, match="Evaluation case must be a dictionary"):
-        evaluation_runner.run_evaluation_file(test_file)
+        evaluation_runner.run_evaluation_file(test_file, "model_a", "v1", "support_eval")
 
 
 def test_run_evaluation_file_unsupported_evaluator(tmp_path):
@@ -173,7 +182,7 @@ def test_run_evaluation_file_unsupported_evaluator(tmp_path):
 
     file_utils.save_results(bad_dataset, test_file)
     with pytest.raises(ValueError, match="Unsupported evaluator"):
-        evaluation_runner.run_evaluation_file(test_file)
+        evaluation_runner.run_evaluation_file(test_file, "model_a", "v1", "support_eval")
 
 
 def test_run_evaluation_file_wrong_field_type(tmp_path):
@@ -188,7 +197,7 @@ def test_run_evaluation_file_wrong_field_type(tmp_path):
 
     file_utils.save_results(bad_dataset, test_file)
     with pytest.raises(TypeError, match="Actual must be a string"):
-        evaluation_runner.run_evaluation_file(test_file)
+        evaluation_runner.run_evaluation_file(test_file, "model_a", "v1", "support_eval")
 
     
 
@@ -204,5 +213,5 @@ def test_run_evaluation_file_wrong_field_type_evaluator(tmp_path):
 
     file_utils.save_results(bad_dataset, test_file)
     with pytest.raises(TypeError, match="Evaluator must be a string"):
-        evaluation_runner.run_evaluation_file(test_file)
+        evaluation_runner.run_evaluation_file(test_file, "model_a", "v1", "support_eval")
 
