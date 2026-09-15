@@ -1,3 +1,61 @@
+def determine_outcome(pass_rate_difference):
+    if pass_rate_difference > 0:
+        return "improvement"
+    elif pass_rate_difference < 0:
+        return "regression"
+    else:
+        return "tie"
+
+
+def determine_changed_fields(model_changed, prompt_version_changed, dataset_changed):
+
+    changed_fields = []
+
+    if model_changed:
+        changed_fields.append("model")
+
+    if prompt_version_changed:
+        changed_fields.append("prompt_version")
+
+    if dataset_changed:
+        changed_fields.append("dataset_name")
+
+    return changed_fields
+
+
+def determine_comparison_validity(changed_count):
+    if changed_count == 1:
+        return "clean"
+    elif changed_count > 1:
+        return "confounded"
+    else:
+        return "same_setup"
+
+
+def determine_comparison_type(
+    model_changed,
+    prompt_version_changed,
+    dataset_changed,
+    changed_count
+    ):
+
+    if model_changed and not prompt_version_changed and not dataset_changed:
+        return "model"
+
+    elif prompt_version_changed and not model_changed and not dataset_changed:
+        return "prompt"
+
+    elif dataset_changed and not model_changed and not prompt_version_changed:
+        return "dataset"
+
+    elif changed_count > 1:
+        return "confounded"
+
+    else:
+        return "same_setup"
+    
+
+
 def compare_runs(baseline, candidate):
 
     baseline_pass_rate = baseline["pass_rate"]
@@ -12,54 +70,18 @@ def compare_runs(baseline, candidate):
     dataset_changed = baseline["dataset_name"] != candidate["dataset_name"]
 
 
-    changed_fields = []
-
-    if model_changed:
-        changed_fields.append("model")
-
-    if prompt_version_changed:
-        changed_fields.append("prompt_version")
-
-    if dataset_changed:
-        changed_fields.append("dataset_name")
+    changed_fields = determine_changed_fields(model_changed, prompt_version_changed, dataset_changed)
 
 
     changed_count = len(changed_fields)
 
-    if model_changed and not prompt_version_changed and not dataset_changed:
-        comparison_type = "model"
-
-    elif prompt_version_changed and not model_changed and not dataset_changed:
-        comparison_type = "prompt"
-
-    elif dataset_changed and not model_changed and not prompt_version_changed:
-        comparison_type = "dataset"
-
-    elif changed_count > 1:
-        comparison_type = "confounded"
-
-    else:
-        comparison_type = "same_setup"
+    comparison_type = determine_comparison_type(model_changed, prompt_version_changed, dataset_changed, changed_count)
 
 
-
-    if changed_count == 1:
-        comparison_validity = "clean"
-    elif changed_count > 1:
-        comparison_validity = "confounded"
-    else:
-        comparison_validity = "same_setup"
+    comparison_validity = determine_comparison_validity(changed_count)
 
 
-
-    if pass_rate_difference > 0:
-        outcome = "improvement"
-
-    elif pass_rate_difference < 0:
-        outcome = "regression"
-
-    else: 
-        outcome = "tie"
+    outcome = determine_outcome(pass_rate_difference)
 
     return {
         "baseline_pass_rate": baseline_pass_rate,

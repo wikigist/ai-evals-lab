@@ -204,3 +204,21 @@ def test_compare_runs_all_fields_changed():
     assert result["comparison_validity"] == "confounded"
     assert result["changed_fields"] == ["model", "prompt_version", "dataset_name"]
     assert result["changed_count"] == 3
+
+
+def test_determine_outcome_improvement():
+    result = experiments.determine_outcome(0.20)
+
+    assert result == "improvement"
+
+
+def test_determine_outcome_regression():
+    result = experiments.determine_outcome(-0.05)
+
+    assert result == "regression"
+
+
+def test_determine_outcome_tie():
+    result = experiments.determine_outcome(0)
+
+    assert result == "tie"
