@@ -1,3 +1,5 @@
+import file_utils
+
 def determine_outcome(pass_rate_difference):
     if pass_rate_difference > 0:
         return "improvement"
@@ -91,5 +93,20 @@ def compare_runs(baseline, candidate):
         "comparison_validity": comparison_validity,
         "comparison_type": comparison_type,
         "changed_fields": changed_fields,
-        "changed_count": changed_count
+        "changed_count": changed_count,
+        "baseline_model": baseline["model"],
+        "candidate_model": candidate["model"],
+        "baseline_prompt_version": baseline["prompt_version"],
+        "candidate_prompt_version": candidate["prompt_version"],
+        "baseline_dataset_name": baseline["dataset_name"],
+        "candidate_dataset_name": candidate["dataset_name"]
         }
+
+
+
+def compare_and_save_runs(baseline, candidate, filename):
+    comparison = compare_runs(baseline, candidate)
+
+    file_utils.add_result(comparison, filename)
+
+    return comparison
