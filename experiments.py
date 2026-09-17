@@ -1,4 +1,6 @@
 import file_utils
+from datetime import datetime, timezone
+import math
 
 def determine_outcome(pass_rate_difference):
     if pass_rate_difference > 0:
@@ -103,10 +105,49 @@ def compare_runs(baseline, candidate):
         }
 
 
+def is_same_comparison(existing, current):
+    return (
+        math.isclose(existing["baseline_pass_rate"], current["baseline_pass_rate"])
+        and math.isclose(existing["candidate_pass_rate"], current["candidate_pass_rate"])
+        and existing["baseline_model"] == current["baseline_model"]
+        and existing["candidate_model"] == current["candidate_model"]
+        and existing["baseline_prompt_version"] == current["baseline_prompt_version"]
+        and existing["candidate_prompt_version"] == current["candidate_prompt_version"]
+        and existing["baseline_dataset_name"] == current["baseline_dataset_name"]
+        and existing["candidate_dataset_name"] == current["candidate_dataset_name"]
+        )
+
 
 def compare_and_save_runs(baseline, candidate, filename):
     comparison = compare_runs(baseline, candidate)
 
-    file_utils.add_result(comparison, filename)
+    timestamp = datetime.now(timezone.utc).isoformat()
+
+    saved_results = file_utils.load_results(filename)
+
+    record = {
+        "comparison": comparison,
+        "timestamp": timestamp
+        }
+
+    existing_comparisons = []
+
+    for saved_result in saved_results:
+        if "comparison" in saved_result:
+            existing_comparisons.append(saved_result["comparison"])
+        else:
+            existing_comparisons.append(saved_result)
+
+    same_comparison_found = False
+
+    for existing_comparison in existing_comparisons:
+        if is_same_comparison(existing_comparison, comparison):
+            same_comparison_found = True
+        break
+
+    if not same_comparison_found:
+        saved_results.append(record)
+
+        file_utils.save_results(saved_results, filename)
 
     return comparison

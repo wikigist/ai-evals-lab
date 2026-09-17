@@ -262,7 +262,8 @@ def test_compare_and_save_runs(tmp_path):
 
     saved_results = file_utils.load_results(filename)
 
-    assert saved_results == [result]
+    assert saved_results[0]["comparison"] == result
+    assert "timestamp" in saved_results[0]
 
 
 def test_compare_and_save_runs_builds_history(tmp_path):
@@ -336,3 +337,46 @@ def test_compare_and_save_runs_avoids_duplicates(tmp_path):
 
     saved_results = file_utils.load_results(filename)
     assert len(saved_results) == 1
+
+
+
+def test_compare_and_save_runs_handles_old_history_format(tmp_path):
+    filename = tmp_path / "experiment_comparisons.json"
+
+    old_comparison = {
+        "baseline_pass_rate": 0.60,
+        "candidate_pass_rate": 0.80,
+        "pass_rate_difference": 0.20,
+        "outcome": "improvement",
+        "comparison_validity": "clean",
+        "comparison_type": "model",
+        "changed_fields": ["model"],
+        "changed_count": 1,
+        "baseline_model": "model_a",
+        "candidate_model": "model_b",
+        "baseline_prompt_version": "v1",
+        "candidate_prompt_version": "v1",
+        "baseline_dataset_name": "capital_eval",
+        "candidate_dataset_name": "capital_eval"
+        }
+    
+    file_utils.save_results([old_comparison], filename)
+    baseline = {
+        "pass_rate": 0.60,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    candidate = {
+        "pass_rate": 0.80,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+        }
+
+    experiments.compare_and_save_runs(baseline, candidate, filename)
+    saved_results = file_utils.load_results(filename)
+
+    assert len(saved_results) == 1
+    assert saved_results[0] == old_comparison
