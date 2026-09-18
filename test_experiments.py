@@ -380,3 +380,178 @@ def test_compare_and_save_runs_handles_old_history_format(tmp_path):
 
     assert len(saved_results) == 1
     assert saved_results[0] == old_comparison
+
+
+def test_is_same_comparison_returns_true_for_same_experiment():
+    existing = {
+        "baseline_pass_rate": 0.60,
+        "candidate_pass_rate": 0.80,
+        "baseline_model": "model_a",
+        "candidate_model": "model_b",
+        "baseline_prompt_version": "v1",
+        "candidate_prompt_version": "v1",
+        "baseline_dataset_name": "capital_eval",
+        "candidate_dataset_name": "capital_eval"
+        }
+
+    current = {
+        "baseline_pass_rate": 0.60,
+        "candidate_pass_rate": 0.80,
+        "baseline_model": "model_a",
+        "candidate_model": "model_b",
+        "baseline_prompt_version": "v1",
+        "candidate_prompt_version": "v1",
+        "baseline_dataset_name": "capital_eval",
+        "candidate_dataset_name": "capital_eval"
+        }
+
+    result = experiments.is_same_comparison(existing, current)
+    assert result is True
+
+
+def test_is_same_comparison_returns_false_for_different_model():
+        existing = {
+            "baseline_pass_rate": 0.60,
+            "candidate_pass_rate": 0.80,
+            "baseline_model": "model_a",
+            "candidate_model": "model_b",
+            "baseline_prompt_version": "v1",
+            "candidate_prompt_version": "v1",
+            "baseline_dataset_name": "capital_eval",
+            "candidate_dataset_name": "capital_eval"
+            }
+
+        current = {
+            "baseline_pass_rate": 0.60,
+            "candidate_pass_rate": 0.80,
+            "baseline_model": "model_a",
+            "candidate_model": "model_c",
+            "baseline_prompt_version": "v1",
+            "candidate_prompt_version": "v1",
+            "baseline_dataset_name": "capital_eval",
+            "candidate_dataset_name": "capital_eval"
+            }
+
+        result = experiments.is_same_comparison(existing, current)
+        assert result is False
+
+
+def test_is_same_comparison_allows_tiny_float_difference():
+    existing = {
+        "baseline_pass_rate": 0.60,
+        "candidate_pass_rate": 0.80,
+        "baseline_model": "model_a",
+        "candidate_model": "model_b",
+        "baseline_prompt_version": "v1",
+        "candidate_prompt_version": "v1",
+        "baseline_dataset_name": "capital_eval",
+        "candidate_dataset_name": "capital_eval"
+    }
+
+    current = {
+        "baseline_pass_rate": 0.6000000000000001,
+        "candidate_pass_rate": 0.80,
+        "baseline_model": "model_a",
+        "candidate_model": "model_b",
+        "baseline_prompt_version": "v1",
+        "candidate_prompt_version": "v1",
+        "baseline_dataset_name": "capital_eval",
+        "candidate_dataset_name": "capital_eval"
+    }
+
+    result = experiments.is_same_comparison(existing, current)
+
+    assert result is True
+
+
+
+def test_has_same_comparison_returns_true_when_match_exists():
+    existing_comparison = {
+        "baseline_pass_rate": 0.60,
+        "candidate_pass_rate": 0.80,
+        "baseline_model": "model_a",
+        "candidate_model": "model_b",
+        "baseline_prompt_version": "v1",
+        "candidate_prompt_version": "v1",
+        "baseline_dataset_name": "capital_eval",
+        "candidate_dataset_name": "capital_eval"
+    }
+
+    current_comparison = {
+        "baseline_pass_rate": 0.60,
+        "candidate_pass_rate": 0.80,
+        "baseline_model": "model_a",
+        "candidate_model": "model_b",
+        "baseline_prompt_version": "v1",
+        "candidate_prompt_version": "v1",
+        "baseline_dataset_name": "capital_eval",
+        "candidate_dataset_name": "capital_eval"
+    }
+
+    result = experiments.has_same_comparison([existing_comparison], current_comparison)
+    assert result is True
+
+
+def test_has_same_comparison_returns_false_when_no_match_exists():
+
+    existing_comparison = {
+        "baseline_pass_rate": 0.60,
+        "candidate_pass_rate": 0.80,
+        "baseline_model": "model_a",
+        "candidate_model": "model_b",
+        "baseline_prompt_version": "v1",
+        "candidate_prompt_version": "v1",
+        "baseline_dataset_name": "capital_eval",
+        "candidate_dataset_name": "capital_eval"
+    }
+
+    current_comparison = {
+        "baseline_pass_rate": 0.60,
+        "candidate_pass_rate": 0.80,
+        "baseline_model": "model_a",
+        "candidate_model": "model_c",
+        "baseline_prompt_version": "v1",
+        "candidate_prompt_version": "v1",
+        "baseline_dataset_name": "capital_eval",
+        "candidate_dataset_name": "capital_eval"
+    }
+
+    result = experiments.has_same_comparison([existing_comparison], current_comparison)
+    assert result is False
+
+
+
+def test_extract_existing_comparisons_handles_old_and_new_formats():
+    old_comparison = {
+        "baseline_pass_rate": 0.60,
+        "candidate_pass_rate": 0.80,
+        "baseline_model": "model_a",
+        "candidate_model": "model_b",
+        "baseline_prompt_version": "v1",
+        "candidate_prompt_version": "v1",
+        "baseline_dataset_name": "capital_eval",
+        "candidate_dataset_name": "capital_eval"
+    }
+
+    new_record = {
+    "comparison": {
+        "baseline_pass_rate": 0.70,
+        "candidate_pass_rate": 0.90,
+        "baseline_model": "model_a",
+        "candidate_model": "model_c",
+        "baseline_prompt_version": "v1",
+        "candidate_prompt_version": "v2",
+        "baseline_dataset_name": "capital_eval",
+        "candidate_dataset_name": "capital_eval"
+    },
+    "timestamp": "2026-09-18T17:00:00+00:00"
+    }
+
+    result = experiments.extract_existing_comparisons(
+    [old_comparison, new_record]
+    )
+
+    assert result == [
+    old_comparison,
+    new_record["comparison"]
+    ]

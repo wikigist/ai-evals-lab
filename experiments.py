@@ -118,6 +118,34 @@ def is_same_comparison(existing, current):
         )
 
 
+
+def extract_existing_comparisons(saved_results):
+
+    existing_comparisons = []
+
+    for saved_result in saved_results:
+        if "comparison" in saved_result:
+            existing_comparisons.append(saved_result["comparison"])
+        else:
+            existing_comparisons.append(saved_result)
+
+    return (existing_comparisons)
+
+
+
+def has_same_comparison(existing_comparisons, comparison):
+    same_comparison_found = False
+
+    for existing_comparison in existing_comparisons:
+        if is_same_comparison(existing_comparison, comparison):
+            same_comparison_found = True
+        break
+
+    return same_comparison_found
+
+
+
+
 def compare_and_save_runs(baseline, candidate, filename):
     comparison = compare_runs(baseline, candidate)
 
@@ -130,20 +158,9 @@ def compare_and_save_runs(baseline, candidate, filename):
         "timestamp": timestamp
         }
 
-    existing_comparisons = []
+    existing_comparisons = extract_existing_comparisons(saved_results)
 
-    for saved_result in saved_results:
-        if "comparison" in saved_result:
-            existing_comparisons.append(saved_result["comparison"])
-        else:
-            existing_comparisons.append(saved_result)
-
-    same_comparison_found = False
-
-    for existing_comparison in existing_comparisons:
-        if is_same_comparison(existing_comparison, comparison):
-            same_comparison_found = True
-        break
+    same_comparison_found = has_same_comparison(existing_comparisons, comparison)
 
     if not same_comparison_found:
         saved_results.append(record)
