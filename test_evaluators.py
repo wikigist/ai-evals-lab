@@ -165,42 +165,46 @@ def test_run_evaluation_batch():
 
 
 def test_run_evaluation_suite():
-        cases = [
-    {
-        "actual": "Paris",
-        "expected": "Paris",
-        "evaluator": "exact_match"
-    },
-    {
-        "actual": "The capital of France is London.",
-        "expected": "Paris",
-        "evaluator": "contains"
-    }
-]
-
-        actual = evaluators.run_evaluation_suite(cases, "model_a", "v1", "support_eval")
-        expected = {
-    "results": [
+    cases = [
         {
             "actual": "Paris",
             "expected": "Paris",
-            "evaluator": "exact_match",
-            "status": "pass"
-        },
-        {
-            "actual": "The capital of France is London.",
-            "expected": "Paris",
-            "evaluator": "contains",
-            "status": "fail"
-        }
-    ],
-    "pass_rate": 0.5,
-    "case_count": 2,
-    "model": "model_a",
-    "prompt_version": "v1",
-    "dataset_name": "support_eval"
-}
-        assert actual == expected
+            "evaluator": "exact_match"
+            },
+            {
+                "actual": "The capital of France is London.",
+                "expected": "Paris",
+                "evaluator": "contains"
+                }
+                ]
+    actual = evaluators.run_evaluation_suite(cases, "model_a", "v1", "support_eval")
+    expected = {
+        "results": [
+            {
+                "actual": "Paris",
+                "expected": "Paris",
+                "evaluator": "exact_match",
+                "status": "pass"
+                },
+                {
+                    "actual": "The capital of France is London.",
+                    "expected": "Paris",
+                    "evaluator": "contains",
+                    "status": "fail"
+                    }
+                    ],
+                    "pass_rate": 0.5,
+                    "case_count": 2,
+                    "model": "model_a",
+                    "prompt_version": "v1",
+                    "dataset_name": "support_eval"
+                    }
+
+    assert "run_id" in actual
+    assert actual["run_id"].startswith("run_")
+    actual_without_run_id = actual.copy()
+    actual_without_run_id.pop("run_id")
+    assert actual_without_run_id == expected
 
 
 
@@ -215,9 +219,16 @@ def test_run_evaluation_suite_empty():
     "model": "model_a",
     "prompt_version": "v1",
     "dataset_name": "support_eval"
-}
+    }
 
-    assert actual == expected
+    assert "run_id" in actual
+    assert actual["run_id"].startswith("run_")
+
+    actual_without_run_id = actual.copy()
+    actual_without_run_id.pop("run_id")
+
+    assert actual_without_run_id == expected
+
 
 
 
@@ -247,7 +258,13 @@ def test_run_evaluation_suite_one_case():
     "dataset_name": "support_eval"
     }
 
-    assert actual == expected
+    assert "run_id" in actual
+    assert actual["run_id"].startswith("run_")
+
+    actual_without_run_id = actual.copy()
+    actual_without_run_id.pop("run_id")
+
+    assert actual_without_run_id == expected
 
 
 def test_run_evaluation_suite_all_fail():
@@ -296,7 +313,14 @@ def test_run_evaluation_suite_all_fail():
             "dataset_name": "support_eval"
 
             }
-    assert actual == expected 
+
+    assert "run_id" in actual
+    assert actual["run_id"].startswith("run_")
+
+    actual_without_run_id = actual.copy()
+    actual_without_run_id.pop("run_id")
+
+    assert actual_without_run_id == expected
 
 
 def test_run_evaluation_suite_rejects_unsupported_evaluator():
@@ -526,6 +550,8 @@ def test_run_evaluation_suite_case_count():
 
         run_result = evaluators.run_evaluation_suite(cases, "model_a", "v1", "support_eval")
         assert run_result["case_count"] == 3
+        assert "run_id" in run_result
+        assert run_result["run_id"].startswith("run_")
 
 
 def test_run_evaluation_suite_case_count_empty():
@@ -568,6 +594,42 @@ def test_run_evaluation_suite_dataset_name_metadata():
     )
 
     assert run_result["dataset_name"] == "support_eval"
+
+
+
+def test_generate_run_id_starts_with_run_prefix():
+    run_id = evaluators.generate_run_id()
+
+    assert run_id.startswith("run_")
+
+
+def test_generate_run_id_returns_unique_ids():
+
+    run_id_one = evaluators.generate_run_id()
+    run_id_two = evaluators.generate_run_id()
+
+    assert run_id_one != run_id_two
+
+
+
+def test_run_evaluation_suite_includes_run_id():
+    cases = [
+        {
+            "actual": "Paris",
+            "expected": "Paris",
+            "evaluator": "exact_match"
+        }
+    ]
+
+    run_result = evaluators.run_evaluation_suite(
+        cases,
+        "model_a",
+        "v1",
+        "support_eval"
+    )
+
+    assert "run_id" in run_result
+    assert run_result["run_id"].startswith("run_")
 
 
     

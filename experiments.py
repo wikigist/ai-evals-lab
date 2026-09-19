@@ -2,6 +2,7 @@ import file_utils
 from datetime import datetime, timezone
 import math
 
+
 def determine_outcome(pass_rate_difference):
     if pass_rate_difference > 0:
         return "improvement"

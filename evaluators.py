@@ -1,6 +1,11 @@
 import metrics
 import evaluators
 import pytest
+from uuid import uuid4
+
+
+def generate_run_id():
+    return f"run_{uuid4()}"
 
 def evaluate_answer(actual_answer, expected_answer):
 
@@ -78,6 +83,7 @@ def run_evaluation_suite(cases, model, prompt_version, dataset_name):
     results = run_evaluation_batch(cases)
     pass_rate = metrics.calculate_pass_rate(results)
     run_result = {
+        "run_id": generate_run_id(),
         "results": results,
         "pass_rate": pass_rate,
         "case_count": len(results),

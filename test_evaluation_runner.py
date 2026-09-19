@@ -28,7 +28,13 @@ def test_run_evaluation_file_with_project_dataset():
     "dataset_name": "support_eval"
     }
 
-    assert actual == expected
+    assert "run_id" in actual
+    assert actual["run_id"].startswith("run_")
+
+    actual_without_run_id = actual.copy()
+    actual_without_run_id.pop("run_id")
+
+    assert actual_without_run_id == expected
 
 
 def test_run_evaluation_file_with_tmp_path(tmp_path):
@@ -70,7 +76,13 @@ def test_run_evaluation_file_with_tmp_path(tmp_path):
     "dataset_name": "support_eval"
     }
 
-    assert actual == expected
+    assert "run_id" in actual
+    assert actual["run_id"].startswith("run_")
+
+    actual_without_run_id = actual.copy()
+    actual_without_run_id.pop("run_id")
+
+    assert actual_without_run_id == expected
 
 
 
@@ -91,7 +103,13 @@ def test_run_evaluation_file_with_empty_list(tmp_path):
         "dataset_name": "support_eval"
     }
 
-    assert actual == expected 
+    assert "run_id" in actual
+    assert actual["run_id"].startswith("run_")
+
+    actual_without_run_id = actual.copy()
+    actual_without_run_id.pop("run_id")
+
+    assert actual_without_run_id == expected
 
 
 

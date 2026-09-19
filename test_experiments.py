@@ -555,3 +555,4 @@ def test_extract_existing_comparisons_handles_old_and_new_formats():
     old_comparison,
     new_record["comparison"]
     ]
+
