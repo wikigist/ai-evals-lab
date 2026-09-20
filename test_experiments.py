@@ -2,6 +2,7 @@ import experiments
 import pytest
 import file_utils
 
+
 def test_compare_runs_improvement():
     baseline = {
         "pass_rate": 0.60,
@@ -264,6 +265,9 @@ def test_compare_and_save_runs(tmp_path):
 
     assert saved_results[0]["comparison"] == result
     assert "timestamp" in saved_results[0]
+
+    assert "comparison_id" in saved_results[0]
+    assert saved_results[0]["comparison_id"].startswith("cmp_")
 
 
 def test_compare_and_save_runs_builds_history(tmp_path):
@@ -556,3 +560,95 @@ def test_extract_existing_comparisons_handles_old_and_new_formats():
     new_record["comparison"]
     ]
 
+
+def test_generate_comparison_id_starts_with_cmp_prefix():
+    cmp_id = experiments.generate_comparison_id()
+
+    assert cmp_id.startswith("cmp_")
+
+
+def test_generate_comparison_id_returns_unique_ids():
+
+    cmp_id_one = experiments.generate_comparison_id()
+    cmp_id_two = experiments.generate_comparison_id()
+
+    assert cmp_id_one != cmp_id_two
+
+
+
+def test_compare_runs_includes_run_ids():
+    baseline = {
+        "run_id": "run_baseline_123",
+        "pass_rate": 0.60,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    candidate = {
+        "run_id": "run_candidate_456",
+        "pass_rate": 0.80,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    result = experiments.compare_runs(baseline, candidate)
+
+    assert result["baseline_run_id"] == "run_baseline_123"
+    assert result["candidate_run_id"] == "run_candidate_456"
+
+
+def test_compare_and_save_runs_preserves_run_ids(tmp_path):
+    baseline = {
+        "run_id": "run_baseline_123",
+        "pass_rate": 0.60,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    candidate = {
+        "run_id": "run_candidate_456",
+        "pass_rate": 0.80,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    filename = tmp_path / "experiment_comparisons.json"
+
+    experiments.compare_and_save_runs(
+        baseline,
+        candidate,
+        filename
+    )
+
+    saved_results = file_utils.load_results(filename)
+
+    saved_comparison = saved_results[0]["comparison"]
+
+    assert saved_comparison["baseline_run_id"] == "run_baseline_123"
+    assert saved_comparison["candidate_run_id"] == "run_candidate_456"
+
+
+def test_compare_runs_without_run_ids_still_works():
+    baseline = {
+        "pass_rate": 0.60,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    candidate = {
+        "pass_rate": 0.80,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    result = experiments.compare_runs(baseline, candidate)
+
+    assert result["outcome"] == "improvement"
+    assert "baseline_run_id" not in result
+    assert "candidate_run_id" not in result

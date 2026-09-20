@@ -1,6 +1,11 @@
 import file_utils
 from datetime import datetime, timezone
 import math
+from uuid import uuid4
+
+
+def generate_comparison_id():
+    return f"cmp_{uuid4()}"
 
 
 def determine_outcome(pass_rate_difference):
@@ -88,7 +93,8 @@ def compare_runs(baseline, candidate):
 
     outcome = determine_outcome(pass_rate_difference)
 
-    return {
+
+    comparison = {
         "baseline_pass_rate": baseline_pass_rate,
         "candidate_pass_rate": candidate_pass_rate,
         "pass_rate_difference": pass_rate_difference,
@@ -104,6 +110,12 @@ def compare_runs(baseline, candidate):
         "baseline_dataset_name": baseline["dataset_name"],
         "candidate_dataset_name": candidate["dataset_name"]
         }
+
+    if "run_id" in baseline and "run_id" in candidate:
+        comparison["baseline_run_id"] = baseline["run_id"]
+        comparison["candidate_run_id"] = candidate["run_id"]
+
+    return comparison
 
 
 def is_same_comparison(existing, current):
@@ -155,6 +167,7 @@ def compare_and_save_runs(baseline, candidate, filename):
     saved_results = file_utils.load_results(filename)
 
     record = {
+        "comparison_id": generate_comparison_id(),
         "comparison": comparison,
         "timestamp": timestamp
         }
