@@ -652,3 +652,64 @@ def test_compare_runs_without_run_ids_still_works():
     assert result["outcome"] == "improvement"
     assert "baseline_run_id" not in result
     assert "candidate_run_id" not in result
+
+
+
+def test_determine_quality_gate_passes_within_allowed_regression():
+    result = experiments.determine_quality_gate(
+        -0.02,
+        0.04
+    )
+
+    assert result == "pass"
+
+
+def test_determine_quality_gate_fails_beyond_allowed_regression():
+    result = experiments.determine_quality_gate(
+        -0.06,
+        0.04
+    )
+
+    assert result == "fail"
+
+
+def test_determine_quality_gate_passes_at_exact_threshold():
+    result = experiments.determine_quality_gate(
+        -0.04,
+        0.04
+    )
+
+    assert result == "pass"
+
+
+def test_determine_quality_gate_passes_for_improvement():
+    result = experiments.determine_quality_gate(
+        0.03,
+        0.04
+    )
+
+    assert result == "pass"
+
+
+def test_compare_runs_includes_quality_gate_when_threshold_provided():
+    baseline = {
+        "pass_rate": 0.80,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    candidate = {
+        "pass_rate": 0.78,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    result = experiments.compare_runs(
+        baseline,
+        candidate,
+        allowed_regression=0.04
+    )
+
+    assert result["quality_gate"] == "pass"

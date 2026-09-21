@@ -66,7 +66,7 @@ def determine_comparison_type(
     
 
 
-def compare_runs(baseline, candidate):
+def compare_runs(baseline, candidate, allowed_regression=None):
 
     baseline_pass_rate = baseline["pass_rate"]
     candidate_pass_rate = candidate["pass_rate"]
@@ -110,6 +110,12 @@ def compare_runs(baseline, candidate):
         "baseline_dataset_name": baseline["dataset_name"],
         "candidate_dataset_name": candidate["dataset_name"]
         }
+
+    if allowed_regression is not None:
+        comparison["quality_gate"] = determine_quality_gate(
+            pass_rate_difference,
+            allowed_regression
+            )
 
     if "run_id" in baseline and "run_id" in candidate:
         comparison["baseline_run_id"] = baseline["run_id"]
@@ -182,3 +188,10 @@ def compare_and_save_runs(baseline, candidate, filename):
         file_utils.save_results(saved_results, filename)
 
     return comparison
+
+
+def determine_quality_gate(pass_rate_difference, allowed_regression):
+    if pass_rate_difference >= -allowed_regression:
+        return "pass"
+    else:
+        return "fail"
