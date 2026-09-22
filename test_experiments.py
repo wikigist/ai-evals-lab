@@ -713,3 +713,118 @@ def test_compare_runs_includes_quality_gate_when_threshold_provided():
     )
 
     assert result["quality_gate"] == "pass"
+
+
+def test_compare_runs_includes_allowed_regression_when_provided():
+    baseline = {
+        "pass_rate": 0.80,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    candidate = {
+        "pass_rate": 0.78,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    result = experiments.compare_runs(
+        baseline,
+        candidate,
+        allowed_regression=0.04
+    )
+
+    assert result["allowed_regression"] == 0.04
+
+
+
+def test_compare_and_save_runs_persists_quality_gate(tmp_path):
+    baseline = {
+        "pass_rate": 0.80,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    candidate = {
+        "pass_rate": 0.78,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    filename = tmp_path / "experiment_comparisons.json"
+
+    experiments.compare_and_save_runs(
+        baseline,
+        candidate,
+        filename,
+        allowed_regression=0.04
+    )
+
+    saved_results = file_utils.load_results(filename)
+
+    saved_comparison = saved_results[0]["comparison"]
+
+    assert saved_comparison["quality_gate"] == "pass"
+    assert saved_comparison["allowed_regression"] == 0.04
+
+
+def test_compare_and_save_runs_persists_failed_quality_gate(tmp_path):
+    baseline = {
+        "pass_rate": 0.80,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    candidate = {
+        "pass_rate": 0.72,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    filename = tmp_path / "experiment_comparisons.json"
+
+    experiments.compare_and_save_runs(
+        baseline,
+        candidate,
+        filename,
+        allowed_regression=0.04
+    )
+
+    saved_results = file_utils.load_results(filename)
+
+    saved_comparison = saved_results[0]["comparison"]
+
+    assert saved_comparison["quality_gate"] == "fail"
+    assert saved_comparison["allowed_regression"] == 0.04
+
+
+def test_compare_runs_without_allowed_regression_has_no_quality_gate():
+    baseline = {
+        "pass_rate": 0.80,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    candidate = {
+        "pass_rate": 0.72,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+    }
+
+    result = experiments.compare_runs(
+        baseline,
+        candidate
+    )
+
+    assert "quality_gate" not in result
+    assert "allowed_regression" not in result
+
+

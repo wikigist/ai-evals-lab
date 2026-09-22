@@ -116,6 +116,7 @@ def compare_runs(baseline, candidate, allowed_regression=None):
             pass_rate_difference,
             allowed_regression
             )
+        comparison["allowed_regression"] = allowed_regression
 
     if "run_id" in baseline and "run_id" in candidate:
         comparison["baseline_run_id"] = baseline["run_id"]
@@ -165,8 +166,8 @@ def has_same_comparison(existing_comparisons, comparison):
 
 
 
-def compare_and_save_runs(baseline, candidate, filename):
-    comparison = compare_runs(baseline, candidate)
+def compare_and_save_runs(baseline, candidate, filename, allowed_regression=None):
+    comparison = compare_runs(baseline, candidate, allowed_regression=allowed_regression)
 
     timestamp = datetime.now(timezone.utc).isoformat()
 
