@@ -117,6 +117,10 @@ def compare_runs(baseline, candidate, allowed_regression=None):
             allowed_regression
             )
         comparison["allowed_regression"] = allowed_regression
+        
+        comparison["gate_action"] = determine_gate_action(
+        comparison["quality_gate"]
+        )
 
     if "run_id" in baseline and "run_id" in candidate:
         comparison["baseline_run_id"] = baseline["run_id"]
@@ -196,3 +200,13 @@ def determine_quality_gate(pass_rate_difference, allowed_regression):
         return "pass"
     else:
         return "fail"
+
+
+def determine_gate_action(quality_gate):
+    if quality_gate == "pass":
+        return "allow"
+
+    if quality_gate == "fail":
+        return "block"
+
+    raise ValueError("Unsupported quality gate")

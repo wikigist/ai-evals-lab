@@ -828,3 +828,154 @@ def test_compare_runs_without_allowed_regression_has_no_quality_gate():
     assert "allowed_regression" not in result
 
 
+def test_determine_gate_action_allows_passed_gate():
+    result = experiments.determine_gate_action("pass")
+
+    assert result == "allow"
+
+
+def test_determine_gate_action_blocks_failed_gate():
+    result = experiments.determine_gate_action("fail")
+
+    assert result == "block"
+
+
+def test_determine_gate_action_raises_for_invalid_gate():
+    with pytest.raises(ValueError):
+        experiments.determine_gate_action("maybe")
+
+
+def test_compare_runs_includes_gate_action_when_threshold_provided():
+    baseline = {
+        "pass_rate": 0.80,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+        }
+
+    candidate = {
+        "pass_rate": 0.72,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+        }
+
+    result = experiments.compare_runs(
+        baseline,
+        candidate,
+        allowed_regression=0.04
+        )
+
+    assert result["gate_action"] == "block"
+
+
+def test_compare_runs_allows_candidate_when_gate_passes():
+    baseline = {
+        "pass_rate": 0.80,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+        }
+
+    candidate = {
+        "pass_rate": 0.78,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+        }
+
+    result = experiments.compare_runs(
+        baseline,
+        candidate,
+        allowed_regression=0.04
+        )
+
+    assert result["quality_gate"] == "pass"
+    assert result["gate_action"] == "allow"
+
+
+
+def test_compare_and_save_runs_persists_gate_action(tmp_path):
+    baseline = {
+        "pass_rate": 0.80,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+        }
+
+    candidate = {
+        "pass_rate": 0.72,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+        }
+
+    filename = tmp_path / "experiment_comparisons.json"
+
+    experiments.compare_and_save_runs(
+        baseline,
+        candidate,
+        filename,
+        allowed_regression=0.04
+        )
+
+    saved_results = file_utils.load_results(filename)
+
+    saved_comparison = saved_results[0]["comparison"]
+
+    assert saved_comparison["gate_action"] == "block"
+
+
+
+def test_compare_runs_without_threshold_has_no_gate_action():
+    baseline = {
+        "pass_rate": 0.80,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+        }
+
+    candidate = {
+        "pass_rate": 0.72,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+        }
+
+    result = experiments.compare_runs(
+        baseline,
+        candidate
+        )
+
+    assert "gate_action" not in result
+
+
+def test_compare_and_save_runs_persists_allow_gate_action(tmp_path):
+    baseline = {
+        "pass_rate": 0.80,
+        "model": "model_a",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+        }
+
+    candidate = {
+        "pass_rate": 0.78,
+        "model": "model_b",
+        "prompt_version": "v1",
+        "dataset_name": "capital_eval"
+        }
+
+    filename = tmp_path / "experiment_comparisons.json"
+
+    experiments.compare_and_save_runs(
+        baseline,
+        candidate,
+        filename,
+        allowed_regression=0.04
+        )
+
+    saved_results = file_utils.load_results(filename)
+
+    saved_comparison = saved_results[0]["comparison"]
+
+    assert saved_comparison["gate_action"] == "allow"
