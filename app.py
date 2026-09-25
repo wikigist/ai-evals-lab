@@ -4,7 +4,7 @@ import file_utils
 
 load_dotenv()
 
-client = OpenAI()
+
 
 model_name = "gpt-5.5"
 second_model_name = "gpt-5.6-luna"
@@ -12,6 +12,7 @@ response_heading = "\n--- Model answer ---"
 
 
 def get_ai_response(prompt, model=model_name):
+    client = OpenAI()
     response = client.responses.create(
         model=model,
         input=prompt
