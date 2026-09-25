@@ -22,10 +22,9 @@ def test_load_results_invalid_json():
     assert actual == expected
 
 
-def test_load_results_valid_file():
-    filename = "module_test_result.json"
+def test_load_results_valid_file(tmp_path):
+    filename = tmp_path / "module_test_result.json"
 
-    actual = file_utils.load_results(filename)
     expected = [
     {
         "status": "success",
@@ -39,7 +38,12 @@ def test_load_results_valid_file():
     #    "status": "success",
     #    "score": 105
     #}
-]
+    
+    ]
+    
+    file_utils.save_results(expected, filename)
+
+    actual = file_utils.load_results(filename)
 
     assert actual == expected
 
