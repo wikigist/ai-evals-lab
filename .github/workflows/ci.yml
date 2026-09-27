@@ -28,3 +28,6 @@ jobs:
 
       - name: Run tests
         run: python -m pytest
+        
+      - name: Run eval quality gate
+        run: python check_eval_quality.py

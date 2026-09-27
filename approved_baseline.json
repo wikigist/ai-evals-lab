@@ -1,0 +1,22 @@
+{
+    "run_id": "run_a1e22097-4f42-4b70-8a9d-6c2285e087c8",
+    "results": [
+        {
+            "actual": "Paris",
+            "expected": "Paris",
+            "evaluator": "exact_match",
+            "status": "pass"
+        },
+        {
+            "actual": "The capital of France is London.",
+            "expected": "Paris",
+            "evaluator": "contains",
+            "status": "fail"
+        }
+    ],
+    "pass_rate": 0.5,
+    "case_count": 2,
+    "model": "baseline-model",
+    "prompt_version": "v1",
+    "dataset_name": "evaluation_cases"
+}
