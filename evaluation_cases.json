@@ -1,6 +1,6 @@
 [
     {
-        "actual": "London",
+        "actual": "Paris",
         "expected": "Paris",
         "evaluator": "exact_match"
     },
