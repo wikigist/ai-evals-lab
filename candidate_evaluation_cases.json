@@ -1,0 +1,12 @@
+[
+  {
+    "actual": "London",
+    "expected": "Paris",
+    "evaluator": "exact_match"
+  },
+  {
+    "actual": "The capital of France is London.",
+    "expected": "Paris",
+    "evaluator": "contains"
+  }
+]

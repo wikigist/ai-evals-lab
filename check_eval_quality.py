@@ -5,7 +5,7 @@ import quality_gate_runner
 
 baseline = file_utils.load_required_results("approved_baseline.json")
 candidate = evaluation_runner.run_evaluation_file(
-    "evaluation_cases.json",
+    "candidate_evaluation_cases.json",
     "candidate-model",
     "v1",
     "evaluation_cases"
