@@ -29,5 +29,21 @@ jobs:
       - name: Run tests
         run: python -m pytest
         
+  eval-quality-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
       - name: Run eval quality gate
         run: python check_eval_quality.py
