@@ -4,3 +4,19 @@ __pycache__/
 .pytest_cache/
 interaction_records.json
 .DS_Store
+
+# Local experiment outputs
+brand_new_results.json
+broken_results.json
+evaluation_result.json
+evaluation_results.json
+experiment_comparisons.json
+missing_results.json
+module_test_result.json
+new_result_save.json
+workflow_results.json
+
+# Local scratch files
+example.txt
+module_playground.py
+rough.py
