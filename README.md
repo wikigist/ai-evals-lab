@@ -39,6 +39,39 @@ GitHub Actions
 Required pull-request checks
 ```
 
+## How to Run
+
+Install the project dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the automated test suite:
+
+```bash
+python -m pytest
+```
+
+Run the evaluation quality gate:
+
+```bash
+python check_eval_quality.py
+```
+
+The quality gate exits with:
+
+```text
+0 = allow
+1 = block
+```
+
+You can inspect the most recent process exit code with:
+
+```bash
+echo $?
+```
+
 ## Project Status
 
 Core evaluation, testing, experiment comparison, quality-gate, and CI workflows are implemented.
